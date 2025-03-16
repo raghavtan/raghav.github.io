@@ -37,7 +37,7 @@ virtualenv:  ## Setup the python virtual environment
 
 clean:  ## Clean up virtual environment and all temporary files
 	@echo "$(RED)Cleaning up...$(RESET)"
-	@rm -rf $(VENV) __pycache__ *.pyc *.pyo .pytest_cache .mypy_cache
+	@rm -rf __pycache__ *.pyc *.pyo .pytest_cache .mypy_cache
 	@rm -rf resume.md resume.pdf resume.html
 	@echo "$(GREEN)Cleanup done.$(RESET)"
 
@@ -59,6 +59,11 @@ lint:  ## Lint the application with flake8
 	@echo "$(BLUE)Linting the application...$(RESET)"
 	@$(VENV)/bin/flake8 . --exclude=$(VENV)
 	@echo "$(GREEN)Linting complete.$(RESET)"
+
+publish:  ## Publish the resume to the web
+	@echo "$(BLUE)Publishing the resume...$(RESET)"
+	cp resume.html index.html
+	@echo "$(GREEN)Resume published.$(RESET)"
 
 # Setup and run for new developers
 setup: virtualenv activate install

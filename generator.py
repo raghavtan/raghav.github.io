@@ -1,17 +1,11 @@
-# generator.py
-
-import sys
-
 from jinja2 import Template
 
-try:
-    import pdfkit
-except ImportError:
-    print("pdfkit is not installed. Please install it with 'pip install pdfkit'.")
-    sys.exit(1)
+from html_template import HTML_TEMPLATE
+from markdown_template import MARKDOWN_TEMPLATE
+from pdf_template import PDF_TEMPLATE
 
-from templates import HTML_TEMPLATE, MARKDOWN_TEMPLATE, PDF_TEMPLATE
 
+# Remove pdfkit import since we're not using it anymore
 
 def render_template(template_str, context):
     """Render a Jinja2 template with the provided context."""
@@ -36,14 +30,16 @@ def generate_markdown_resume(data, output_file="resume.md"):
 
 
 def generate_pdf_resume(data, output_file="resume.pdf"):
-    """Generate a PDF resume using pdfkit."""
+    """Generate a PDF resume using xhtml2pdf."""
+    from xhtml2pdf import pisa  # Import xhtml2pdf library
     rendered_pdf_html = render_template(PDF_TEMPLATE, data)
-    try:
-        # If wkhtmltopdf is not in your PATH, specify its location:
-        # config = pdfkit.configuration(wkhtmltopdf='/path/to/wkhtmltopdf')
-        # pdfkit.from_string(rendered_pdf_html, output_file, configuration=config)
-        pdfkit.from_string(rendered_pdf_html, output_file)
+
+    # Open output file for writing (binary mode)
+    with open(output_file, "w+b") as result_file:
+        # Convert HTML to PDF
+        pisa_status = pisa.CreatePDF(rendered_pdf_html, dest=result_file)
+
+    if pisa_status.err:
+        print("An error occurred while generating the PDF resume using xhtml2pdf.")
+    else:
         print(f"PDF resume generated and saved as '{output_file}'.")
-    except Exception as e:
-        print("An error occurred while generating the PDF resume:")
-        print(e)
